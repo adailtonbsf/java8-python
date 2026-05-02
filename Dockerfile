@@ -3,7 +3,8 @@ FROM ghcr.io/ptero-eggs/yolks:java_8
 USER root
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-venv python3-distutils python3-pip && \
+    apt-get install -y --no-install-recommends python3 python3-venv python3-distutils python3-pip rclone ca-certificates && \
+    pip3 install --no-cache-dir ruamel.yaml && \
     rm -rf /var/lib/apt/lists/*
 
 USER container
