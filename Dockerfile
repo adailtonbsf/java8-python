@@ -16,6 +16,9 @@ RUN apt-get update && \
     && pip3 install --no-cache-dir ruamel.yaml \
     && rm -rf /var/lib/apt/lists/*
 
+RUN id -u container >/dev/null 2>&1 || \
+    useradd -m -d /home/container -s /bin/bash container
+
 USER container
 ENV USER=container HOME=/home/container
 WORKDIR /home/container
