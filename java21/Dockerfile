@@ -15,7 +15,7 @@ RUN apt-get update && \
     && pip3 install --break-system-packages --no-cache-dir ruamel.yaml \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia o script de sincronização
+# Copia o script de reconciliação
 COPY reconcile.py /reconcile.py
 RUN chmod +x /reconcile.py
 

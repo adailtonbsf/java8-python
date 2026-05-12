@@ -9,11 +9,17 @@ RUN apt-get update && \
         python3-distutils \
         python3-pip \
         rclone \
+        zstd \
         ca-certificates \
         git \
         rsync \
         netcat-openbsd \
-    && pip3 install --no-cache-dir ruamel.yaml \
+    && pip3 install --no-cache-dir \
+        ruamel.yaml \
+        pyyaml \
+        jinja2 \
+        zstandard \
+        minio \
     && rm -rf /var/lib/apt/lists/*
 
 RUN id -u container >/dev/null 2>&1 || \
