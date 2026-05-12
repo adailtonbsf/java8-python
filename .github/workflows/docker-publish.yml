@@ -29,6 +29,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        version: [java8, java21]
 
     steps:
       - name: Checkout
@@ -51,21 +54,19 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # Em push de tag vX.Y.Z → :vX.Y.Z
-            type=semver,pattern={{version}}
-            # Em push de tag vX.Y.Z → :vX.Y (sem patch)
-            type=semver,pattern={{major}}.{{minor}}
-            # Em push para main → :latest
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            # Em PR → :pr-N (não faz push)
-            type=ref,event=pr
+            # Tag específica da versão (ex: :java8, :java21)
+            type=raw,value=${{ matrix.version }}
+            # Se for Java 8 e estiver na main, marca como :latest para compatibilidade
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' && matrix.version == 'java8' }}
+            # Tags de versão semver se houver
+            type=semver,pattern={{version}},suffix=-${{ matrix.version }}
 
       - name: Build e Push
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./${{ matrix.version }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ matrix.version }}
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ matrix.version }},mode=max
