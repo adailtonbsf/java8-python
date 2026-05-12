@@ -12,7 +12,7 @@ RUN apt-get update && \
         git \
         rsync \
         netcat-openbsd \
-    && pip3 install --no-cache-dir ruamel.yaml \
+    && pip3 install --break-system-packages --no-cache-dir ruamel.yaml \
     && rm -rf /var/lib/apt/lists/*
 
 # Copia o script de sincronização
