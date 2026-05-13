@@ -25,6 +25,7 @@ RUN apt-get update && \
 RUN id -u container >/dev/null 2>&1 || \
     useradd -m -d /home/container -s /bin/bash container
 
+# reconcile.py vem de tools/ na raiz do repositório (build context = raiz)
 COPY reconcile.py /reconcile.py
 RUN chmod +x /reconcile.py
 
