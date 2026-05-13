@@ -193,10 +193,14 @@ def apply_replace_jars(src_dir: Path, dest_dir: Path):
             shutil.copytree(item, dest_item)
 
 
-def apply_merge(src_dir: Path, dest_dir: Path):
+def apply_merge(src: Path, dest: Path):
     """Mode merge: arquivos do template sobrescrevem; arquivos extras no destino são mantidos."""
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True)
+    if src.is_file():
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
+    else:
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(src, dest, dirs_exist_ok=True)
 
 
 def apply_template(src_file: Path, dest_file: Path):
@@ -280,7 +284,8 @@ def apply_overlay(extract_dir: Path, manifest: dict):
             apply_template(j2_src, dest)
         elif mode == "copy_if_missing":
             apply_copy_if_missing(src, dest)
-        elif mode == "force_copy":
+        elif mode in ("force_copy", "copy"):
+            # "copy" é alias de "force_copy" — sempre sobrescreve
             if src.is_dir():
                 shutil.copytree(src, dest, dirs_exist_ok=True)
             else:
